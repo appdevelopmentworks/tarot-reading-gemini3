@@ -19,6 +19,15 @@ export const metadata: Metadata = {
   description: "A mystic tech tarot reading experience.",
 };
 
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+  viewportFit: "cover",
+};
+
+
 export default function RootLayout({
   children,
 }: Readonly<{

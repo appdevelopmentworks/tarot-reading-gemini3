@@ -25,9 +25,10 @@ export const HUD = () => {
     };
 
     return (
-        <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between p-6 z-10">
+        <div className="absolute inset-0 pointer-events-none flex flex-col items-center justify-between p-6 pt-[calc(env(safe-area-inset-top)+1.5rem)] pb-[calc(env(safe-area-inset-bottom)+1.5rem)] z-10">
             {/* Header / Language Toggle */}
-            <header className="w-full flex justify-between items-start">
+            <header className="w-full flex flex-col md:flex-row justify-between items-center md:items-start gap-4">
+
                 <div>
                     <h1 className="font-syne font-bold text-4xl text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]">
                         {t.title}
@@ -90,21 +91,22 @@ export const HUD = () => {
                         exit={{ opacity: 0, scale: 0.95 }}
                         className="pointer-events-auto w-full max-w-lg"
                     >
-                        <div className="relative group">
+                        <div className="relative group flex flex-col md:flex-row gap-2">
                             <input
                                 type="text"
                                 value={question}
                                 onChange={(e) => setQuestion(e.target.value)}
                                 placeholder={t.placeholder}
-                                className="w-full bg-black/60 border border-white/20 rounded-xl px-6 py-4 text-white placeholderable-white/30 focus:outline-none focus:border-[#00f3ff] focus:ring-1 focus:ring-[#00f3ff] transition-all font-inter backdrop-blur-xl"
+                                className="w-full bg-black/60 border border-white/20 rounded-xl px-6 py-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#00f3ff] focus:ring-1 focus:ring-[#00f3ff] transition-all font-inter backdrop-blur-xl"
                             />
                             <button
                                 type="submit"
-                                className="absolute right-2 top-2 bottom-2 px-6 bg-white text-black font-bold rounded-lg hover:bg-[#00f3ff] transition-colors font-syne uppercase tracking-wider text-sm"
+                                className="md:absolute md:right-2 md:top-2 md:bottom-2 px-8 py-4 md:py-0 bg-white text-black font-bold rounded-lg hover:bg-[#00f3ff] active:scale-95 transition-all font-syne uppercase tracking-wider text-sm"
                             >
                                 {t.submit}
                             </button>
                         </div>
+
                     </motion.form>
                 )}
             </AnimatePresence>
