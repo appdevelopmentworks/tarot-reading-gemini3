@@ -9,12 +9,15 @@ export function getCardTexturePath(card: TarotCard): string {
     }
 
     // Minor Arcana
-    const suitPrefix = {
+    const suitMap: Record<string, string> = {
         'wands': 'wa',
         'cups': 'cu',
         'swords': 'sw',
         'pentacles': 'pe'
-    }[card.suit!];
+    };
+
+    const suitPrefix = suitMap[card.suit!];
+
 
     let rankSuffix = '';
     const n = card.number!;
