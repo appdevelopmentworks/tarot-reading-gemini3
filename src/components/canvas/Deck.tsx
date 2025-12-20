@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { useFrame, useThree } from "@react-three/fiber";
 import { useTexture } from "@react-three/drei";
 import { useStore } from "@/lib/store";
-import { motion } from "framer-motion-3d";
+
 import { getCardById } from "@/lib/tarot-data";
 import { getCardTexturePath } from "@/lib/asset-utils";
 
