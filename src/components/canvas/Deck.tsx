@@ -44,7 +44,7 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
     // Let's load the specific texture.
 
     const texture = useTexture(texturePath);
-    const backTexture = useTexture("/assets/tarot_images/ar00.jpg"); // Fallback or template back
+    const backTexture = useTexture("/assets/card_back.jpg");
 
     const isHovered = index === hoveredCardId;
 
@@ -65,15 +65,14 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
             targetRot.set(time + i * 0.1, time * 0.5 + i * 0.2, time * 0.3 + i * 0.3);
         } else if (phase === 'dealing') {
             const angle = (i / total) * Math.PI * 2;
-            const radius = 5.5; // Slightly larger circle for better view
+            const radius = 5.5;
             targetPos.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
-            // Tilt slightly towards center for dramatic effect
             targetRot.set(-0.2, -angle + Math.PI / 2, 0);
 
             if (isHovered) {
                 targetPos.y = 0.8;
                 targetScale = 1.15;
-                targetRot.x = -0.4; // Tilt more when hovered
+                targetRot.x = -0.4;
             }
         } else if (phase === 'reading' || phase === 'result') {
             if (selected) {
@@ -142,13 +141,21 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
             >
                 <boxGeometry args={[CARD_SIZE[0], CARD_SIZE[1], CARD_SIZE[2]]} />
                 {/* Materials: Right, Left, Top, Bottom, Front, Back */}
-                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} /> {/* Sides */}
-                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
-                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
-                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
+                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} /> {/* Sides (Metallic Copper) */}
+                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
+                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
+                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
                 <meshStandardMaterial map={texture} roughness={0.2} metalness={0.1} /> {/* Front */}
-                <meshStandardMaterial color="#1a0533" emissive="#B026FF" emissiveIntensity={isHovered ? 0.8 : 0.2} roughness={0.3} /> {/* Back - Visible Glow */}
+                <meshStandardMaterial
+                    map={backTexture}
+                    emissiveMap={backTexture}
+                    emissive={isHovered ? "#B026FF" : "#442200"}
+                    emissiveIntensity={isHovered ? 1.0 : 0.3}
+                    roughness={0.3}
+                    metalness={0.5}
+                /> {/* Back - Using New Image */}
             </mesh>
+
 
             {/* Mystic light following the card when hovered */}
             {isHovered && (
