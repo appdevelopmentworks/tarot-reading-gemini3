@@ -141,19 +141,25 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
             >
                 <boxGeometry args={[CARD_SIZE[0], CARD_SIZE[1], CARD_SIZE[2]]} />
                 {/* Materials: Right, Left, Top, Bottom, Front, Back */}
-                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} /> {/* Sides (Metallic Copper) */}
-                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
-                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
-                <meshStandardMaterial color="#2a1a0a" roughness={0.5} metalness={0.8} />
-                <meshStandardMaterial map={texture} roughness={0.2} metalness={0.1} /> {/* Front */}
+                <meshStandardMaterial attach="material-0" color="#2a1a0a" roughness={0.5} metalness={0.8} />
+                <meshStandardMaterial attach="material-1" color="#2a1a0a" roughness={0.5} metalness={0.8} />
+                <meshStandardMaterial attach="material-2" color="#2a1a0a" roughness={0.5} metalness={0.8} />
+                <meshStandardMaterial attach="material-3" color="#2a1a0a" roughness={0.5} metalness={0.8} />
                 <meshStandardMaterial
+                    attach="material-4"
+                    map={texture}
+                    roughness={0.2}
+                    metalness={0.1}
+                /> {/* Front - Tarot Face */}
+                <meshStandardMaterial
+                    attach="material-5"
                     map={backTexture}
                     emissiveMap={backTexture}
                     emissive={isHovered ? "#B026FF" : "#442200"}
                     emissiveIntensity={isHovered ? 1.0 : 0.3}
                     roughness={0.3}
                     metalness={0.5}
-                /> {/* Back - Using New Image */}
+                /> {/* Back - Mystic Eye */}
             </mesh>
 
 
