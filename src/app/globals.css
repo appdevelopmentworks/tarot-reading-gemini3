@@ -1,12 +1,13 @@
 @import "tailwindcss";
 
 :root {
-  --background: #050511;
-  --foreground: #e0e0e0;
-  --color-primary: #050511;
+  --background: #08081a;
+  --foreground: #f0f0f5;
+  --color-primary: #08081a;
   --color-accent: #B026FF;
   --color-cyan: #00f3ff;
   --color-magenta: #ff0055;
+  --mystic-glow: rgba(176, 38, 255, 0.15);
 }
 
 @theme inline {
@@ -18,10 +19,25 @@
 
 body {
   font-family: var(--font-inter), sans-serif;
-  background-color: var(--background);
+  background: radial-gradient(circle at center, #0f0f2d 0%, #050511 100%);
   color: var(--foreground);
+  color-scheme: dark;
+  min-height: 100vh;
+  margin: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-syne), sans-serif;
+}
+
+/* Glassmorphism utility */
+.glass {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }

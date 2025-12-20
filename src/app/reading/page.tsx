@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Environment, Sparkles, OrbitControls } from "@react-three/drei";
+import { Environment, Sparkles, OrbitControls, SpotLight, Float } from "@react-three/drei";
 import { motion } from "framer-motion";
 import Deck from "@/components/canvas/Deck";
 import { HUD } from "@/components/ui/HUD";
@@ -9,45 +9,64 @@ import { Suspense } from "react";
 
 export default function ReadingPage() {
     return (
-        <main className="relative w-full h-screen bg-[#050511] text-[#e0e0e0] overflow-hidden">
+        <main className="relative w-full h-screen bg-background text-foreground overflow-hidden">
 
             <HUD />
 
             {/* 3D Scene - Reading Room */}
             <div className="absolute inset-0 z-0">
-                <Canvas camera={{ position: [0, 5, 8], fov: 35 }} shadows>
+                <Canvas camera={{ position: [0, 6, 10], fov: 35 }} shadows>
                     <color attach="background" args={['#050511']} />
-                    <ambientLight intensity={0.5} />
-                    <pointLight position={[10, 10, 10]} intensity={1} color="#B026FF" />
+
+                    {/* Ambient environment */}
+                    <ambientLight intensity={0.4} />
+
+                    {/* Main Ritual Lights */}
+                    <pointLight position={[0, 5, 0]} intensity={15} color="#B026FF" distance={20} />
+                    <pointLight position={[5, 3, 5]} intensity={10} color="#00f3ff" distance={15} />
+                    <pointLight position={[-5, 3, -5]} intensity={10} color="#ff0055" distance={15} />
+
+                    {/* Central Glow at the Altar */}
+                    <SpotLight position={[0, 10, 0]} angle={0.3} penumbra={1} intensity={2} color="#B026FF" castShadow />
+
+                    {/* Particles */}
+                    <Sparkles count={100} scale={15} size={2} speed={0.3} opacity={0.4} color="#B026FF" />
+                    <Sparkles count={50} scale={10} size={4} speed={0.1} opacity={0.2} color="#00f3ff" />
 
                     {/* Altar/Table Surface */}
                     <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2, 0]} receiveShadow>
-                        <planeGeometry args={[50, 50]} />
+                        <planeGeometry args={[100, 100]} />
                         <meshStandardMaterial
-                            color="#050511"
-                            roughness={0.2}
-                            metalness={0.8}
+                            color="#0a0a1a"
+                            roughness={0.1}
+                            metalness={0.5}
                         />
                     </mesh>
 
-                    <gridHelper args={[50, 50, 0x202020, 0x101010]} position={[0, -1.99, 0]} />
+                    <gridHelper args={[100, 50, 0x331166, 0x110022]} position={[0, -1.99, 0]} />
 
                     {/* The Tarot Deck */}
                     <group position={[0, -1.5, 0]}>
                         <Suspense fallback={null}>
-                            <Deck />
+                            <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.2}>
+                                <Deck />
+                            </Float>
                         </Suspense>
                     </group>
 
+
                     <OrbitControls
-                        minPolarAngle={Math.PI / 4}
+                        minPolarAngle={Math.PI / 6}
                         maxPolarAngle={Math.PI / 2.2}
                         enableZoom={false}
                         enablePan={false}
+                        autoRotate={true}
+                        autoRotateSpeed={0.5}
                     />
-                    <Environment preset="night" />
+                    <Environment preset="city" />
                 </Canvas>
             </div>
+
 
         </main>
     );

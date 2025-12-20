@@ -18,16 +18,18 @@ export default function Home() {
 
   const handleStart = () => {
     setIsExiting(true);
-    // Add a slight delay for the exit animation to play
     setTimeout(() => {
       router.push("/reading");
     }, 1000);
   };
 
   return (
-    <main className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center">
+    <main className="relative w-full h-screen overflow-hidden flex flex-col items-center justify-center bg-[#050511]">
+      {/* Background Ambient Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#B026FF] opacity-[0.03] blur-[120px] rounded-full pointer-events-none" />
+      <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-[#00f3ff] opacity-[0.02] blur-[100px] rounded-full pointer-events-none" />
 
-      {/* 3D Background - Persistent but fade out possibly? Or let the next page take over */}
+      {/* 3D Background */}
       <div className={`absolute inset-0 transition-opacity duration-1000 ${isExiting ? 'opacity-0' : 'opacity-100'}`}>
         <HeroScene />
       </div>
@@ -35,22 +37,41 @@ export default function Home() {
       {/* UI Overlay */}
       <AnimatePresence>
         {!isExiting && (
-          <div className="relative z-10 flex flex-col items-center text-center space-y-8 p-4">
+          <div className="relative z-10 flex flex-col items-center text-center space-y-12 p-4">
             <motion.div
-              initial={{ opacity: 0, y: -20, filter: "blur(10px)" }}
-              animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, y: -20, filter: "blur(10px)", transition: { duration: 0.5 } }}
-              transition={{ duration: 1, delay: 0.2 }}
+              transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+              className="flex flex-col items-center"
             >
-              <h1 className="text-5xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50 mb-2 font-syne tracking-tighter drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                CELESTIA
-              </h1>
-              <p className="text-[#a0a0b0] text-sm md:text-base font-inter tracking-[0.3em] uppercase opacity-80">
+              <div className="mb-4 overflow-hidden">
+                <motion.h1
+                  initial={{ y: "100%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-6xl md:text-8xl font-bold bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-white/30 font-syne tracking-tighter drop-shadow-[0_0_30px_rgba(176,38,255,0.2)]"
+                >
+                  CELESTIA
+                </motion.h1>
+              </div>
+
+              <motion.div
+                initial={{ opacity: 0, letterSpacing: "0.5em" }}
+                animate={{ opacity: 0.6, letterSpacing: "0.8em" }}
+                transition={{ duration: 2, delay: 0.5 }}
+                className="text-[#a0a0b0] text-[10px] md:text-xs font-inter uppercase mb-8"
+              >
                 Digital Ritual Platform
-              </p>
+              </motion.div>
+
+              <div className="w-24 h-[1px] bg-gradient-to-r from-transparent via-[#B026FF]/50 to-transparent mb-8" />
             </motion.div>
 
             <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1.2 }}
               exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.5 } }}
             >
               <StartButton onClick={handleStart} />
@@ -59,6 +80,12 @@ export default function Home() {
         )}
       </AnimatePresence>
 
+      {/* Decorative corners */}
+      <div className="absolute top-8 left-8 w-12 h-12 border-t border-l border-white/10 pointer-events-none" />
+      <div className="absolute top-8 right-8 w-12 h-12 border-t border-r border-white/10 pointer-events-none" />
+      <div className="absolute bottom-8 left-8 w-12 h-12 border-b border-l border-white/10 pointer-events-none" />
+      <div className="absolute bottom-8 right-8 w-12 h-12 border-b border-r border-white/10 pointer-events-none" />
     </main>
   );
 }
+

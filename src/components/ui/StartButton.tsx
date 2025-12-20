@@ -24,11 +24,12 @@ export const StartButton = ({ onClick }: StartButtonProps) => {
                 stiffness: 100
             }}
             onClick={onClick}
-            className="group relative px-10 py-5 bg-transparent border-2 border-[#B026FF] text-[#e0e0e0] font-syne text-xl uppercase tracking-[0.2em] rounded-none overflow-hidden cursor-pointer"
+            className="group relative px-10 py-5 bg-transparent border-2 border-[#B026FF] text-white font-syne text-xl uppercase tracking-[0.2em] rounded-none overflow-hidden cursor-pointer"
         >
-            <span className="relative z-10 group-hover:text-white transition-colors duration-300">
+            <span className="relative z-10 group-hover:text-white transition-colors duration-500 font-bold">
                 Start Ritual
             </span>
+
 
             {/* Glow Effect */}
             <div className="absolute inset-0 bg-[#B026FF] opacity-0 group-hover:opacity-20 transition-opacity duration-300 blur-md" />

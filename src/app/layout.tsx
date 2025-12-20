@@ -27,8 +27,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${syne.variable} ${inter.variable} antialiased bg-[#050511] text-[#e0e0e0] overflow-hidden`}
+        className={`${syne.variable} ${inter.variable} antialiased bg-background text-foreground overflow-hidden`}
       >
+
         {children}
       </body>
     </html>

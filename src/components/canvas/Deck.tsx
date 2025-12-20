@@ -44,8 +44,9 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
     // Let's load the specific texture.
 
     const texture = useTexture(texturePath);
-    const backTexture = useTexture("/assets/tarot_images/ar00.jpg"); // Use Fool or a generic back if we had one. 
-    // Actually, physically let's make the cards thinner and add back face.
+    const backTexture = useTexture("/assets/tarot_images/ar00.jpg"); // Fallback or template back
+
+    const isHovered = index === hoveredCardId;
 
     useFrame((state) => {
         if (!meshRef.current) return;
@@ -64,36 +65,32 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
             targetRot.set(time + i * 0.1, time * 0.5 + i * 0.2, time * 0.3 + i * 0.3);
         } else if (phase === 'dealing') {
             const angle = (i / total) * Math.PI * 2;
-            const radius = 4;
+            const radius = 5.5; // Slightly larger circle for better view
             targetPos.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
-            targetRot.set(0, -angle + Math.PI / 2, 0);
+            // Tilt slightly towards center for dramatic effect
+            targetRot.set(-0.2, -angle + Math.PI / 2, 0);
 
-            if (i === hoveredCardId) {
-                targetPos.y = 0.5;
-                targetScale = 1.2;
+            if (isHovered) {
+                targetPos.y = 0.8;
+                targetScale = 1.15;
+                targetRot.x = -0.4; // Tilt more when hovered
             }
         } else if (phase === 'reading' || phase === 'result') {
-            // If selected, move to center
             if (selected) {
                 targetPos.set(0, 4, 3);
-                // Rotate to face camera (face front, tilt up slightly)
                 targetRot.set(-Math.PI / 6, 0, 0);
                 targetScale = 1.5;
             } else {
-                // Others fade or fall back
-                targetPos.y = -10; // Hide
+                targetPos.y = -10;
             }
         } else {
-            // Idle
             targetPos.y += Math.sin(time * 0.5 + i * 0.05) * 0.02;
-            if (i === hoveredCardId) {
+            if (isHovered) {
                 targetPos.y += 0.5;
             }
         }
 
-        // Lerp for smooth animation
-        meshRef.current.position.lerp(targetPos, 0.1);
-        // Rotation is harder to lerp with Euler, use Quaternion in real app, but this is fine for now
+        meshRef.current.position.lerp(targetPos, 0.12);
         meshRef.current.rotation.x = THREE.MathUtils.lerp(meshRef.current.rotation.x, targetRot.x, 0.1);
         meshRef.current.rotation.y = THREE.MathUtils.lerp(meshRef.current.rotation.y, targetRot.y, 0.1);
         meshRef.current.rotation.z = THREE.MathUtils.lerp(meshRef.current.rotation.z, targetRot.z, 0.1);
@@ -106,35 +103,31 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
     const handleClick = async (e: any) => {
         e.stopPropagation();
         if (phase === 'dealing') {
-            console.log("Selected card:", index);
             addSelectedCardId(index);
             setPhase('reading');
-            setReadingResult(""); // Ensure clear start
+            setReadingResult("");
 
             const { generateReading } = await import('@/app/reading/actions');
 
             const question = useStore.getState().question;
-            const language = useStore.getState().language; // Get current language
+            const language = useStore.getState().language;
             const cardName = cardData.name;
 
             try {
-                // Currently receiving full text to resolve crash.
                 const result = await generateReading(question, [cardName], language);
-
-                // Simulate typing effect for "streaming" feel since we have full text
                 const text = result;
                 let currentText = "";
                 const chunkSize = 5;
 
                 for (let i = 0; i < text.length; i += chunkSize) {
                     currentText += text.slice(i, i + chunkSize);
-                    setReadingResult(currentText); // This might be slow with Zustand, but okay for now
-                    await new Promise(r => setTimeout(r, 10)); // Artificial delay
+                    setReadingResult(currentText);
+                    await new Promise(r => setTimeout(r, 10));
                 }
 
             } catch (err) {
                 console.error("Reading failed", err);
-                setReadingResult("The void is silent... (Error connecting to Oracle)");
+                setReadingResult("The void is silent...");
             }
         }
     };
@@ -145,19 +138,26 @@ const Card = ({ id, index, total }: { id: number, index: number, total: number }
                 onPointerOver={(e) => { e.stopPropagation(); setHoveredCardId(index); }}
                 onPointerOut={() => setHoveredCardId(null)}
                 onClick={handleClick}
+                castShadow
             >
                 <boxGeometry args={[CARD_SIZE[0], CARD_SIZE[1], CARD_SIZE[2]]} />
                 {/* Materials: Right, Left, Top, Bottom, Front, Back */}
-                <meshStandardMaterial color="#2d2d2d" /> {/* Right */}
-                <meshStandardMaterial color="#2d2d2d" /> {/* Left */}
-                <meshStandardMaterial color="#2d2d2d" /> {/* Top */}
-                <meshStandardMaterial color="#2d2d2d" /> {/* Bottom */}
-                <meshStandardMaterial map={texture} roughness={0.3} metalness={0.0} /> {/* Front */}
-                <meshStandardMaterial color="#000000" roughness={0.5} /> {/* Back */}
+                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} /> {/* Sides */}
+                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
+                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
+                <meshStandardMaterial color="#3d145e" emissive="#1a0033" emissiveIntensity={0.5} />
+                <meshStandardMaterial map={texture} roughness={0.2} metalness={0.1} /> {/* Front */}
+                <meshStandardMaterial color="#1a0533" emissive="#B026FF" emissiveIntensity={isHovered ? 0.8 : 0.2} roughness={0.3} /> {/* Back - Visible Glow */}
             </mesh>
+
+            {/* Mystic light following the card when hovered */}
+            {isHovered && (
+                <pointLight position={[0, 0, 0.5]} intensity={5} color="#00f3ff" distance={3} decay={2} />
+            )}
         </group>
     );
 };
+
 
 // Main Deck Component
 const Deck = () => {
