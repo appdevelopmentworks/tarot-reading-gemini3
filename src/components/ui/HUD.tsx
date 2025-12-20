@@ -81,67 +81,72 @@ export const HUD = () => {
                 )}
             </AnimatePresence>
 
-            {/* Input Form */}
-            <AnimatePresence>
-                {phase === 'idle' && (
-                    <motion.form
-                        onSubmit={handleSubmit}
-                        initial={{ opacity: 0, y: 50 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95 }}
-                        className="pointer-events-auto w-full max-w-lg"
-                    >
-                        <div className="relative group flex flex-col md:flex-row gap-2">
-                            <input
-                                type="text"
-                                value={question}
-                                onChange={(e) => setQuestion(e.target.value)}
-                                placeholder={t.placeholder}
-                                className="w-full bg-black/60 border border-white/20 rounded-xl px-6 py-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#00f3ff] focus:ring-1 focus:ring-[#00f3ff] transition-all font-inter backdrop-blur-xl"
-                            />
-                            <button
-                                type="submit"
-                                className="md:absolute md:right-2 md:top-2 md:bottom-2 px-8 py-4 md:py-0 bg-white text-black font-bold rounded-lg hover:bg-[#00f3ff] active:scale-95 transition-all font-syne uppercase tracking-wider text-sm"
-                            >
-                                {t.submit}
-                            </button>
-                        </div>
+            {/* Bottom Section: Input Form and Footer */}
+            <div className="w-full flex flex-col items-center space-y-8 pb-4">
+                {/* Input Form */}
+                <AnimatePresence>
+                    {phase === 'idle' && (
+                        <motion.form
+                            onSubmit={handleSubmit}
+                            initial={{ opacity: 0, y: 50 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="pointer-events-auto w-full max-w-lg mb-4"
+                        >
+                            <div className="relative group flex flex-col md:flex-row gap-2">
+                                <input
+                                    type="text"
+                                    value={question}
+                                    onChange={(e) => setQuestion(e.target.value)}
+                                    placeholder={t.placeholder}
+                                    className="w-full bg-black/60 border border-white/20 rounded-xl px-6 py-4 text-white placeholder:text-white/30 focus:outline-none focus:border-[#00f3ff] focus:ring-1 focus:ring-[#00f3ff] transition-all font-inter backdrop-blur-xl"
+                                />
+                                <button
+                                    type="submit"
+                                    className="md:absolute md:right-2 md:top-2 md:bottom-2 px-8 py-4 md:py-0 bg-white text-black font-bold rounded-lg hover:bg-[#00f3ff] active:scale-95 transition-all font-syne uppercase tracking-wider text-sm"
+                                >
+                                    {t.submit}
+                                </button>
+                            </div>
+                        </motion.form>
+                    )}
+                </AnimatePresence>
 
-                    </motion.form>
-                )}
-            </AnimatePresence>
+                {/* Reading Display */}
+                <AnimatePresence>
+                    {(phase === 'reading' || phase === 'result') && (
+                        <motion.div
+                            key="reading-display"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="pointer-events-auto w-full max-w-4xl bg-black/60 backdrop-blur-xl border border-white/10 p-8 md:p-12 max-h-[70vh] overflow-y-auto custom-scrollbar mb-4 rounded-3xl"
+                        >
 
-            {/* Reading Display */}
-            <AnimatePresence>
-                {(phase === 'reading' || phase === 'result') && (
-                    <motion.div
-                        key="reading-display"
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="pointer-events-auto w-full max-w-4xl bg-black/60 backdrop-blur-xl border border-white/10 p-8 md:p-12 max-h-[70vh] overflow-y-auto custom-scrollbar"
-                    >
-                        <div className="font-syne text-[#00f3ff] text-xl mb-6 border-b border-white/10 pb-4">
-                            {t.decoding}
-                        </div>
-                        <div className="prose prose-invert prose-p:text-white/80 prose-headings:text-[#B026FF] max-w-none font-inter leading-relaxed whitespace-pre-wrap">
-                            {readingResult}
-                        </div>
-                        {phase === 'result' && (
-                            <button
-                                onClick={() => { setPhase('idle'); setQuestion(''); setReadingResult(''); }}
-                                className="mt-8 px-6 py-2 border border-white/30 rounded-full text-white/70 hover:bg-white hover:text-black transition-all text-sm uppercase tracking-widest"
-                            >
-                                {t.reset}
-                            </button>
-                        )}
-                    </motion.div>
-                )}
-            </AnimatePresence>
+                            <div className="font-syne text-[#00f3ff] text-xl mb-6 border-b border-white/10 pb-4">
+                                {t.decoding}
+                            </div>
+                            <div className="prose prose-invert prose-p:text-white/80 prose-headings:text-[#B026FF] max-w-none font-inter leading-relaxed whitespace-pre-wrap">
+                                {readingResult}
+                            </div>
+                            {phase === 'result' && (
+                                <button
+                                    onClick={() => { setPhase('idle'); setQuestion(''); setReadingResult(''); }}
+                                    className="mt-8 px-6 py-2 border border-white/30 rounded-full text-white/70 hover:bg-white hover:text-black transition-all text-sm uppercase tracking-widest"
+                                >
+                                    {t.reset}
+                                </button>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
 
-            {/* Footer */}
-            <footer className="w-full text-center text-white/10 font-mono text-[10px]">
-                ID: CELESTIA-V3.1
-            </footer>
+
+                {/* Footer */}
+                <footer className="w-full text-center text-white/10 font-mono text-[10px]">
+                    ID: CELESTIA-V3.1
+                </footer>
+            </div>
+
         </div>
     );
 };
