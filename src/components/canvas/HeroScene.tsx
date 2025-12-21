@@ -1,71 +1,143 @@
 "use client";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Sparkles, Float, Environment, Instances, Instance, CameraControls } from "@react-three/drei";
-import { useRef, useMemo, useState } from "react";
+import {
+    Sparkles,
+    Float,
+    Environment,
+    MeshTransmissionMaterial,
+    Text,
+    PerspectiveCamera,
+    MeshReflectorMaterial,
+    useTexture
+} from "@react-three/drei";
+import { useRef, Suspense } from "react";
 import * as THREE from "three";
 
-const CardStack = () => {
-    const count = 40;
+const CrystalBall = () => {
+    const ballRef = useRef<THREE.Mesh>(null);
+    const innerRef = useRef<THREE.Group>(null);
+    const ring1Ref = useRef<THREE.Mesh>(null);
+    const ring2Ref = useRef<THREE.Mesh>(null);
 
-    // Random rotations for messy stack effect
-    const randomRotations = useMemo(() => {
-        return Array.from({ length: count }).map(() => (Math.random() - 0.5) * 0.15);
-    }, []);
-
-    return (
-        <Instances range={count} position={[0, -0.5, 0]}>
-            <boxGeometry args={[1.6, 2.7, 0.015]} />
-            <meshPhysicalMaterial
-                color="#0a0a10"
-                roughness={0.2}
-                metalness={0.9}
-                clearcoat={1}
-                clearcoatRoughness={0.1}
-                emissive="#201040"
-                emissiveIntensity={0.2}
-            />
-            {Array.from({ length: count }).map((_, i) => (
-                <CardInstance key={i} index={i} rotationZ={randomRotations[i]} />
-            ))}
-        </Instances>
-    )
-}
-
-const CardInstance = ({ index, rotationZ }: { index: number, rotationZ: number }) => {
-    const ref = useRef<THREE.Group>(null);
-
-    // Hover state for individual cards (optional, maybe too busy for stack)
-    // For now, simple breathing stack
+    // Load textures for the cards
+    const textures = useTexture([
+        "/assets/tarot_images/ar00.jpg", // The Fool
+        "/assets/tarot_images/ar10.jpg", // Wheel of Fortune
+        "/assets/tarot_images/ar17.jpg", // The Star
+        "/assets/tarot_images/ar21.jpg", // The World
+    ]);
+    const cardBackTexture = useTexture("/assets/magical_card_back.jpg");
 
     useFrame((state) => {
         const t = state.clock.getElapsedTime();
-        if (ref.current) {
-            // "Breathing" stack animation - cards floating slightly apart
-            const breathing = Math.sin(t * 0.8 + index * 0.1) * 0.002;
-            ref.current.position.y = index * 0.01 + breathing;
+        if (ballRef.current) {
+            ballRef.current.rotation.y = t * 0.1;
         }
-    })
+        if (innerRef.current) {
+            innerRef.current.rotation.y = -t * 0.2;
+            innerRef.current.position.y = Math.sin(t * 0.5) * 0.1;
+        }
+        if (ring1Ref.current) ring1Ref.current.rotation.z = t * 0.5;
+        if (ring2Ref.current) ring2Ref.current.rotation.x = t * 0.3;
+    });
 
-    return <Instance
-        ref={ref}
-        position={[0, index * 0.01, 0]}
-        rotation={[0, 0, rotationZ]}
-    />
-}
+    return (
+        <group>
+            {/* Main Crystal Ball Shell */}
+            <mesh ref={ballRef}>
+                <sphereGeometry args={[2, 64, 64]} />
+                <meshPhysicalMaterial
+                    transmission={0.9}
+                    thickness={2}
+                    roughness={0}
+                    ior={1.5}
+                    clearcoat={1}
+                    color="#ffffff"
+                    metalness={0}
+                />
+            </mesh>
+
+            {/* Inner Content */}
+            <group ref={innerRef}>
+                {/* Central Core Glow */}
+                <mesh>
+                    <sphereGeometry args={[0.3, 32, 32]} />
+                    <meshBasicMaterial color="#00f3ff" transparent opacity={0.9} />
+                </mesh>
+                <pointLight intensity={50} color="#00f3ff" distance={5} />
+
+                {/* AI Brain Indicator */}
+                <Text
+                    position={[0, 0, 0.2]}
+                    fontSize={0.25}
+                    color="#ffffff"
+                    anchorX="center"
+                    anchorY="middle"
+                >
+                    AI
+                </Text>
+
+                {/* Floating Inner Cards */}
+                {(textures as THREE.Texture[]).map((texture: THREE.Texture, i: number) => (
+                    <group key={i} rotation={[0, (i * Math.PI) / 2, 0]}>
+                        <group position={[1.2, 0, 0]} rotation={[0, -Math.PI / 2, 0]}>
+                            {/* Front face with tarot texture */}
+                            <mesh position={[0, 0, 0.011]}>
+                                <planeGeometry args={[0.6, 1]} />
+                                <meshBasicMaterial map={texture} />
+                            </mesh>
+                            {/* Back face with magical card back texture */}
+                            <mesh position={[0, 0, -0.011]} rotation={[0, Math.PI, 0]}>
+                                <planeGeometry args={[0.6, 1]} />
+                                <meshBasicMaterial map={cardBackTexture as THREE.Texture} />
+                            </mesh>
+                            {/* Body of the card (Thin middle frame) */}
+                            <mesh>
+                                <boxGeometry args={[0.6, 1, 0.02]} />
+                                <meshPhysicalMaterial
+                                    color="#1a1a2e"
+                                    emissive="#B026FF"
+                                    emissiveIntensity={1}
+                                    metalness={0.9}
+                                    roughness={0.1}
+                                />
+                            </mesh>
+                        </group>
+                    </group>
+                ))}
+
+                {/* Magical Rings */}
+                <mesh ref={ring1Ref} rotation={[Math.PI / 2, 0, 0]}>
+                    <torusGeometry args={[1.3, 0.02, 16, 100]} />
+                    <meshBasicMaterial color="#B026FF" transparent opacity={0.7} />
+                </mesh>
+                <mesh ref={ring2Ref} rotation={[0, Math.PI / 2, 0]}>
+                    <torusGeometry args={[1.5, 0.02, 16, 100]} />
+                    <meshBasicMaterial color="#00f3ff" transparent opacity={0.5} />
+                </mesh>
+            </group>
+
+            {/* Sub-glow */}
+            <mesh scale={1.2}>
+                <sphereGeometry args={[2, 32, 32]} />
+                <meshBasicMaterial color="#00f3ff" transparent opacity={0.1} side={THREE.BackSide} depthWrite={false} />
+            </mesh>
+        </group>
+    );
+};
 
 const Rig = () => {
     const { camera, pointer } = useThree();
-    const vec = useMemo(() => new THREE.Vector3(), []);
+    const vec = new THREE.Vector3();
 
     useFrame(() => {
-        // Parallax camera movement based on mouse pointer
-        camera.position.lerp(vec.set(pointer.x * 2, 4 + pointer.y * 1, 6 + pointer.y * 1), 0.05);
+        camera.position.lerp(vec.set(pointer.x * 1, pointer.y * 1, 8), 0.05);
         camera.lookAt(0, 0, 0);
     });
 
     return null;
-}
+};
 
 export default function HeroScene() {
     return (
@@ -73,34 +145,52 @@ export default function HeroScene() {
             <Canvas
                 shadows
                 dpr={[1, 2]}
-                camera={{ position: [0, 5, 8], fov: 35 }}
-                gl={{ antialias: true, alpha: false }}
+                gl={{ antialias: true, alpha: false, stencil: false, depth: true }}
             >
-                <color attach="background" args={['#050511']} />
+                <color attach="background" args={["#030308"]} />
 
-                <Rig />
+                <Suspense fallback={<mesh><sphereGeometry args={[2, 16, 16]} /><meshBasicMaterial color="#1a1a2e" wireframe /></mesh>}>
+                    <PerspectiveCamera makeDefault position={[0, 0, 10]} fov={40} />
+                    <Rig />
 
-                {/* Ambient environment */}
-                <ambientLight intensity={0.4} />
+                    {/* Ambient / Environment */}
+                    <ambientLight intensity={1.5} />
+                    <Environment preset="city" />
 
-                {/* Magical Lights */}
-                <pointLight position={[5, 5, 5]} intensity={20} color="#B026FF" distance={15} decay={2} />
-                <pointLight position={[-5, 5, -5]} intensity={20} color="#00f3ff" distance={15} decay={2} />
+                    {/* Magical Lights */}
+                    <spotLight position={[10, 15, 10]} angle={0.3} penumbra={1} intensity={800} color="#B026FF" />
+                    <pointLight position={[-10, 10, -10]} intensity={500} color="#00f3ff" />
+                    <pointLight position={[0, -5, 5]} intensity={200} color="#ffffff" />
 
-                {/* Particles */}
-                <Sparkles count={300} scale={12} size={2} speed={0.4} opacity={0.6} color="#B026FF" noise={0.2} />
-                <Sparkles count={200} scale={10} size={4} speed={0.2} opacity={0.4} color="#00f3ff" noise={0.1} />
+                    {/* Background Particles */}
+                    <Sparkles count={400} scale={15} size={2} speed={0.3} opacity={0.4} color="#B026FF" />
+                    <Sparkles count={300} scale={12} size={1} speed={0.5} opacity={0.3} color="#00f3ff" />
 
-                {/* Centerpiece Deck */}
-                <Float speed={2} rotationIntensity={0.2} floatIntensity={0.2} floatingRange={[-0.1, 0.1]}>
-                    <group rotation={[Math.PI / 4, 0, 0]}> {/* Angled view of deck */}
-                        <CardStack />
-                    </group>
-                </Float>
+                    {/* The Crystal Ball */}
+                    <Float speed={1.5} rotationIntensity={0.5} floatIntensity={0.5}>
+                        <CrystalBall />
+                    </Float>
 
-                {/* Post-processing or Environment (Reflections) */}
-                <Environment preset="city" blur={0.8} />
+                    {/* Ground Reflection (Fake) */}
+                    <mesh position={[0, -4, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                        <planeGeometry args={[20, 20]} />
+                        <MeshReflectorMaterial
+                            blur={[300, 100]}
+                            resolution={2048}
+                            mixBlur={1}
+                            mixStrength={40}
+                            roughness={1}
+                            depthScale={1.2}
+                            minDepthThreshold={0.4}
+                            maxDepthThreshold={1.4}
+                            color="#101010"
+                            metalness={0.5}
+                            mirror={0} // No mirror for real reflector? Actually MeshReflectorMaterial is from drei
+                        />
+                    </mesh>
+                </Suspense>
             </Canvas>
         </div>
     );
 }
+
