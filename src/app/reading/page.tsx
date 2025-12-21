@@ -15,7 +15,7 @@ export default function ReadingPage() {
 
             {/* 3D Scene - Reading Room */}
             <div className="absolute inset-0 z-0">
-                <Canvas camera={{ position: [0, 6, 10], fov: 35 }} shadows>
+                <Canvas camera={{ position: [0, 4, 12], fov: 35 }} shadows>
                     <color attach="background" args={['#050511']} />
 
                     {/* Ambient environment */}
@@ -43,10 +43,8 @@ export default function ReadingPage() {
                         />
                     </mesh>
 
-                    <gridHelper args={[100, 50, 0x331166, 0x110022]} position={[0, -1.99, 0]} />
-
                     {/* The Tarot Deck */}
-                    <group position={[0, -1.5, 0]}>
+                    <group position={[0, -0.2, 0]}>
                         <Suspense fallback={null}>
                             <Float speed={1.5} rotationIntensity={0.1} floatIntensity={0.2}>
                                 <Deck />
