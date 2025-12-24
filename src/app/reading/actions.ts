@@ -36,14 +36,14 @@ export async function generateReading(
     
     **CRITICAL: Use relevant emojis (✨, 🃏, 🌌, 🔮, etc.) throughout the response to make it visually engaging and mystical.**
     
-    Structure the response in Markdown:
-    ## Ⅰ. 象徴の解析 (Analysis) ✨
+    Structure the response as follows (Do NOT use Markdown headers like ##):
+    Ⅰ. 象徴の解析 (Analysis) ✨
     (Deep interpretation of each card and its relevance to the question, using emojis to highlight key points)
     
-    ## Ⅱ. 運命の織り成し (Synthesis) 🌌
+    Ⅱ. 運命の織り成し (Synthesis) 🌌
     (Weave the card meanings together into a coherent narrative, using emojis to set the tone)
     
-    ## Ⅲ. 魂への指針 (Guidance) 🔮
+    Ⅲ. 魂への指針 (Guidance) 🔮
     (Clear, actionable advice or a profound reflection for the user, punctuated with inspiring emojis)
     
     Keep the response concise, elegant, and deeply connected to the essence of Tarot.
